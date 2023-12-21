@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #controls {
+            margin-bottom: 10px;
+        }
+
+        #productTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #productTable th, #productTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #productTable th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<div id="controls">
+    <label for="availableFields">Available Fields:</label>
+    <select id="availableFields" multiple></select>
+
+    <button id="addField">&gt;&gt;</button>
+    <button id="removeField">&lt;&lt;</button>
+
+    <label for="displayFields">Fields to Display:</label>
+    <select id="displayFields" multiple></select>
+</div>
+
+<table id="productTable">
+    <thead>
+        <tr>
+            <th>Subcategory</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Popularity</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const jsonData = [
+            { Subcategory: 'Category A', Title: 'Product 1', Price: 20, Popularity: 95 },
+        ];
+
+        const availableFieldsSelect = document.getElementById('availableFields');
+        Object.keys(jsonData[0]).forEach(field => {
+            const option = document.createElement('option');
+            option.value = field;
+            option.textContent = field;
+            availableFieldsSelect.appendChild(option);
+        });
+
+        document.getElementById('addField').addEventListener('click', function () {
+            moveSelectedOptions('availableFields', 'displayFields');
+        });
+
+        document.getElementById('removeField').addEventListener('click', function () {
+            moveSelectedOptions('displayFields', 'availableFields');
+        });
+
+        displayData(jsonData);
+    });
+
+    function displayData(data) {
+        data.sort((a, b) => b.Popularity - a.Popularity);
+
+        const tableBody = document.querySelector('#productTable tbody');
+        tableBody.innerHTML = '';
+
+        data.forEach(product => {
+            const row = tableBody.insertRow();
+            Object.values(product).forEach(value => {
+                const cell = row.insertCell();
+                cell.textContent = value;
+            });
+        });
+    }
+
+    function moveSelectedOptions(sourceId, destinationId) {
+        const sourceSelect = document.getElementById(sourceId);
+        const destinationSelect = document.getElementById(destinationId);
+
+        for (let i = 0; i < sourceSelect.options.length; i++) {
+            const option = sourceSelect.options[i];
+            if (option.selected) {
+                destinationSelect.appendChild(option.cloneNode(true));
+                sourceSelect.remove(i);
+                i--;
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
